@@ -13,7 +13,6 @@ export type Image = {
   PostId: number
 }
 
-
 export type ImageSmall = {
   id: number
   smallUrl: string
