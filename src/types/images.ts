@@ -12,3 +12,10 @@ export type Image = {
   updatedAt: string
   PostId: number
 }
+
+
+export type ImageSmall = {
+  id: number
+  smallUrl: string
+  alt: string
+}

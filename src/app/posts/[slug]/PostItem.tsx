@@ -1,6 +1,7 @@
 'use client'
 
 import Gallery from "@/components/shared/Gallery";
+import Comments from "@/components/shared/Comments";
 import type { Post } from "@/types/posts";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -21,6 +22,7 @@ export default function PostItem({ post, children } : { post: Post, children?: R
         { showContent && <div>
           { post.content }
         </div> }
+        <Comments postId={post.id} />
       </main>
     </div>
   );
