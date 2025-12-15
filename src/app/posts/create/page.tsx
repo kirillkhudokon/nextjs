@@ -1,11 +1,21 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import Container from '@mui/material/Container'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import Paper from '@mui/material/Paper'
+import CircularProgress from '@mui/material/CircularProgress'
+import Link from 'next/link'
 
 export default function CreatePost() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -43,115 +53,98 @@ export default function CreatePost() {
     }
   }
 
+  if (status === 'loading') {
+    return (
+      <Container maxWidth="sm">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <CircularProgress />
+        </Box>
+      </Container>
+    )
+  }
+
+  if (!session) {
+    return (
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <Alert severity="warning">
+          Пожалуйста, войдите в систему, чтобы создать пост.
+          <Button component={Link} href="/auth/signin" sx={{ ml: 2 }}>
+            Войти
+          </Button>
+        </Alert>
+      </Container>
+    )
+  }
+
   return (
-    <div style={{ maxWidth: '600px', margin: '40px auto', padding: '0 20px' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '28px', marginBottom: '8px' }}>Create New Post</h1>
-        <Link href="/posts" style={{ color: '#0070f3', textDecoration: 'none' }}>
-          ← Back to posts
-        </Link>
-      </div>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Paper elevation={2} sx={{ p: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Создать новый пост
+        </Typography>
 
-      {error && (
-        <div style={{
-          padding: '12px',
-          backgroundColor: '#fee',
-          border: '1px solid #fcc',
-          borderRadius: '6px',
-          color: '#c33',
-          marginBottom: '20px'
-        }}>
-          {error}
-        </div>
-      )}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="title" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-            Title *
-          </label>
-          <input
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField
             id="title"
             name="title"
-            type="text"
+            label="Заголовок"
+            fullWidth
             required
-            style={{
-              width: '100%',
-              padding: '10px',
-              fontSize: '16px',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              boxSizing: 'border-box'
-            }}
-            placeholder="Enter post title"
+            margin="normal"
+            placeholder="Введите заголовок поста"
+            autoFocus
           />
-        </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="url" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-            Slug *
-          </label>
-          <input
+          <TextField
             id="url"
             name="url"
-            type="text"
+            label="URL (slug)"
+            fullWidth
             required
-            style={{
-              width: '100%',
-              padding: '10px',
-              fontSize: '16px',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              boxSizing: 'border-box'
-            }}
+            margin="normal"
             placeholder="my-post-url"
+            helperText="Будет использоваться в адресе страницы"
           />
-          <span style={{ fontSize: '12px', color: '#888', marginTop: '4px', display: 'block' }}>
-            Will be used in the URL
-          </span>
-        </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="content" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-            Content *
-          </label>
-          <textarea
+          <TextField
             id="content"
             name="content"
-            rows={10}
-            style={{
-              width: '100%',
-              padding: '10px',
-              fontSize: '16px',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              boxSizing: 'border-box',
-              fontFamily: 'inherit',
-              resize: 'vertical'
-            }}
-            placeholder="Write your post content..."
+            label="Содержание"
+            fullWidth
+            required
+            multiline
+            rows={12}
+            margin="normal"
+            placeholder="Напишите содержание поста..."
           />
-        </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          style={{
-            width: '100%',
-            padding: '12px',
-            fontSize: '16px',
-            fontWeight: '500',
-            color: 'white',
-            backgroundColor: isSubmitting ? '#999' : '#0070f3',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {isSubmitting ? 'Creating...' : 'Create Post'}
-        </button>
-
-      </form>
-    </div>
+          <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              disabled={isSubmitting}
+              fullWidth
+            >
+              {isSubmitting ? 'Создание...' : 'Создать пост'}
+            </Button>
+            <Button
+              component={Link}
+              href="/posts"
+              variant="outlined"
+              size="large"
+            >
+              Отмена
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   )
 }

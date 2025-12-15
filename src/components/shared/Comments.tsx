@@ -17,7 +17,6 @@ async function fetchComments(postId: number): Promise<CommentsResult> {
     const data = await response.json()
     return { success: true, data }
   } catch (error) {
-    console.log('Failed to fetch comments:', error)
     return { success: false, error: 'Some error. Please try again later.' }
   }
 }
