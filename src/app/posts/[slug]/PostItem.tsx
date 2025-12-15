@@ -22,7 +22,6 @@ export default function PostItem({ post, children } : { post: Post, children?: R
         { showContent && <div>
           { post.content }
         </div> }
-        <Comments postId={post.id} />
       </main>
     </div>
   );
