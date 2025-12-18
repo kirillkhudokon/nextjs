@@ -2,7 +2,6 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Container, Paper, Typography, Button, Box } from '@mui/material'
-import Link from 'next/link'
 
 export default function AuthError() {
   const searchParams = useSearchParams()
@@ -22,7 +21,6 @@ export default function AuthError() {
         </Typography>
         <Box>
           <Button
-            component={Link}
             href="/auth/signin"
             variant="contained"
             fullWidth

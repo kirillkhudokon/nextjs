@@ -2,7 +2,6 @@ import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -24,7 +23,6 @@ export default function Home() {
           <Button 
             variant="contained" 
             size="large"
-            component={Link}
             href="/posts"
             sx={{ mr: 2 }}
           >
@@ -33,7 +31,6 @@ export default function Home() {
           <Button 
             variant="outlined" 
             size="large"
-            component={Link}
             href="/posts/create"
           >
             Создать пост

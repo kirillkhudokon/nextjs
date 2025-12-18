@@ -68,7 +68,7 @@ export default function CreatePost() {
       <Container maxWidth="sm" sx={{ py: 4 }}>
         <Alert severity="warning">
           Пожалуйста, войдите в систему, чтобы создать пост.
-          <Button component={Link} href="/auth/signin" sx={{ ml: 2 }}>
+          <Button href="/auth/signin" sx={{ ml: 2 }}>
             Войти
           </Button>
         </Alert>
@@ -135,7 +135,6 @@ export default function CreatePost() {
               {isSubmitting ? 'Создание...' : 'Создать пост'}
             </Button>
             <Button
-              component={Link}
               href="/posts"
               variant="outlined"
               size="large"

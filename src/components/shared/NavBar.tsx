@@ -11,7 +11,6 @@ import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import { useSession, signOut } from 'next-auth/react'
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export default function NavBar() {
@@ -37,8 +36,7 @@ export default function NavBar() {
       <Toolbar>
         <Typography 
           variant="h6" 
-          component={Link} 
-          href="/"
+          onClick={() => router.push('/')}
           sx={{ 
             flexGrow: 1, 
             textDecoration: 'none', 
@@ -51,8 +49,7 @@ export default function NavBar() {
 
         <Button 
           color="inherit" 
-          component={Link} 
-          href="/posts"
+          onClick={() => router.push('/posts')}
         >
           Посты
         </Button>
@@ -60,9 +57,8 @@ export default function NavBar() {
         {session ? (
           <>
             <Button 
-              color="inherit" 
-              component={Link} 
-              href="/posts/create"
+              color="inherit"
+              onClick={() => router.push('/posts/create')}
             >
               Создать пост
             </Button>
@@ -96,8 +92,7 @@ export default function NavBar() {
         ) : (
           <Button 
             color="inherit" 
-            component={Link} 
-            href="/auth/signin"
+            onClick={() => router.push('/auth/signin')}
           >
             Войти
           </Button>

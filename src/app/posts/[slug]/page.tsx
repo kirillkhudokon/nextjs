@@ -10,7 +10,6 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
-import Link from 'next/link'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 export const dynamic = 'force-dynamic'
@@ -27,7 +26,6 @@ export default async function Post({ params } : PageProps<'/posts/[slug]'>){
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Button 
-        component={Link} 
         href="/posts"
         startIcon={<ArrowBackIcon />}
         sx={{ mb: 3 }}

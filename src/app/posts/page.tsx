@@ -1,5 +1,4 @@
 import type { Post } from "@/types/posts";
-import Link from "next/link";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
 import { desc } from "drizzle-orm";
@@ -35,7 +34,6 @@ export default async function Posts(){
           </Typography>
           <Button 
             variant="contained" 
-            component={Link} 
             href="/posts/create"
             sx={{ mt: 2 }}
           >
@@ -61,7 +59,6 @@ export default async function Posts(){
                 <CardActions>
                   <Button 
                     size="small" 
-                    component={Link} 
                     href={`/posts/${post.url}`}
                   >
                     Читать далее
