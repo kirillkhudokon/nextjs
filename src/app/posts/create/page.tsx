@@ -1,7 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { FormEvent, useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useSession } from 'next-auth/react'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -11,46 +10,26 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
 import CircularProgress from '@mui/material/CircularProgress'
-import Link from 'next/link'
+import { createPost } from './actions'
+import { redirect } from 'next/navigation'
 
 export default function CreatePost() {
-  const router = useRouter()
   const { data: session, status } = useSession()
   const [error, setError] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = async (formData: FormData) => {
     setError('')
-    setIsSubmitting(true)
-
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      title: formData.get('title') ?? '',
-      url: formData.get('url') ?? '',
-      content: formData.get('content') ?? ''
-    }
-
-    try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        setError(error.error || 'Failed to create post')
-        setIsSubmitting(false)
-        return
+    
+    startTransition(async () => {
+      const result = await createPost(formData)
+      if ('error' in result) {
+        setError(result.error)
+        return;
+      } else {
+        redirect(`/posts/${result.url}`);
       }
-
-      const post = await response.json()
-      router.push(`/posts/${post.url}`)
-    } catch (err) {
-      setError('Network error. Please try again.')
-      setIsSubmitting(false)
-    }
+    })
   }
 
   if (status === 'loading') {
@@ -89,7 +68,7 @@ export default function CreatePost() {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box component="form" action={handleSubmit} noValidate>
           <TextField
             id="title"
             name="title"
@@ -129,10 +108,10 @@ export default function CreatePost() {
               type="submit"
               variant="contained"
               size="large"
-              disabled={isSubmitting}
+              disabled={isPending}
               fullWidth
             >
-              {isSubmitting ? 'Создание...' : 'Создать пост'}
+              {isPending ? 'Создание...' : 'Создать пост'}
             </Button>
             <Button
               href="/posts"
