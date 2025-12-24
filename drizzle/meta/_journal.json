@@ -8,6 +8,13 @@
       "when": 1765236557990,
       "tag": "0000_kind_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1766597710302,
+      "tag": "0001_brown_master_chief",
+      "breakpoints": true
     }
   ]
 }

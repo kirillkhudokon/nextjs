@@ -11,23 +11,36 @@ import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
 import CircularProgress from '@mui/material/CircularProgress'
 import { createPost } from './actions'
-import { redirect } from 'next/navigation'
+import { ImageUpload } from '@/components/shared/ImageUpload'
+import { useImageUpload } from '@/hooks/useImageUpload'
+import { useRouter } from 'next/navigation'
 
 export default function CreatePost() {
   const { data: session, status } = useSession()
   const [error, setError] = useState('')
   const [isPending, startTransition] = useTransition()
+  const { uploading, handleImageChange, uploadImage } = useImageUpload()
+  const router = useRouter()
 
   const handleSubmit = async (formData: FormData) => {
     setError('')
     
     startTransition(async () => {
-      const result = await createPost(formData)
-      if ('error' in result) {
-        setError(result.error)
-        return;
-      } else {
-        redirect(`/posts/${result.url}`);
+      try {
+        const imageUrl = await uploadImage()
+        if (imageUrl) {
+          formData.append('imageUrl', imageUrl)
+        }
+        
+        const result = await createPost(formData)
+        if ('error' in result) {
+          setError(result.error)
+          return
+        } else {
+          router.push(`/posts/${result.url}`)
+        }
+      } catch (err: any) {
+        setError(err.message || 'Произошла ошибка при создании поста')
       }
     })
   }
@@ -103,12 +116,14 @@ export default function CreatePost() {
             placeholder="Напишите содержание поста..."
           />
 
+          <ImageUpload onImageChange={handleImageChange} onError={setError} />
+
           <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
             <Button
               type="submit"
               variant="contained"
               size="large"
-              disabled={isPending}
+              disabled={isPending || uploading}
               fullWidth
             >
               {isPending ? 'Создание...' : 'Создать пост'}
