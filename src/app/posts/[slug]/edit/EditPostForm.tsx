@@ -7,7 +7,9 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import type { Post } from '@/types/posts'
 import { updatePost } from './actions'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import { ImageUpload } from '@/components/shared/ImageUpload'
+import { useImageUpload } from '@/hooks/useImageUpload'
 
 type EditPostFormProps = {
   post: Post
@@ -15,19 +17,35 @@ type EditPostFormProps = {
 }
 
 export function EditPostForm({ post, slug }: EditPostFormProps) {
+  const router = useRouter();
   const [error, setError] = useState('')
   const [isPending, startTransition] = useTransition()
+  const { uploading, removeExistingImage, handleImageChange, uploadImage } = useImageUpload()
 
   const handleSubmit = async (formData: FormData) => {
     setError('')
     
     startTransition(async () => {
-      const result = await updatePost(slug, formData)
-      
-      if (result?.error) {
-        setError(result.error)
-      } else if (result?.success && result.url) {
-        redirect(`/posts/${result.url}`)
+      try {
+        const imageUrl = await uploadImage()
+        
+        if (imageUrl) {
+          formData.append('imageUrl', imageUrl)
+        } else if (removeExistingImage) {
+          formData.append('imageUrl', '')
+        } else if (post.imageUrl) {
+          formData.append('imageUrl', post.imageUrl)
+        }
+        
+        const result = await updatePost(slug, formData)
+        
+        if (result?.error) {
+          setError(result.error)
+        } else if (result?.success && result.url) {
+          router.push(`/posts/${result.url}`)
+        }
+      } catch (err: any) {
+        setError(err.message || 'Произошла ошибка при обновлении поста')
       }
     })
   }
@@ -75,12 +93,18 @@ export function EditPostForm({ post, slug }: EditPostFormProps) {
           defaultValue={post.content}
         />
 
+        <ImageUpload 
+          existingImageUrl={post.imageUrl} 
+          onImageChange={handleImageChange}
+          onError={setError}
+        />
+
         <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
           <Button
             type="submit"
             variant="contained"
             size="large"
-            disabled={isPending}
+            disabled={isPending || uploading}
             fullWidth
           >
             {isPending ? 'Сохранение...' : 'Сохранить изменения'}

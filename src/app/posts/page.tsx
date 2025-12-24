@@ -61,6 +61,18 @@ export default async function Posts({ searchParams }: { searchParams: SearchPara
         }}>
           {allPosts.map(post => (
             <Card key={post.id} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              {post.imageUrl && (
+                <Box
+                  component="img"
+                  src={post.imageUrl}
+                  alt={post.title}
+                  sx={{
+                    width: '100%',
+                    height: 200,
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
               <CardContent sx={{ flexGrow: 1 }}>
                   <Typography variant="h5" component="h2" gutterBottom>
                     {post.title}

@@ -12,6 +12,7 @@ export async function updatePost(slug: string, formData: FormData) {
   const title = formData.get('title') as string
   const url = formData.get('url') as string
   const content = formData.get('content') as string
+  const imageUrl = formData.get('imageUrl') as string | null
 
   if (!title || !content || !url) {
     return { error: 'Title, content and url are required' }
@@ -35,6 +36,7 @@ export async function updatePost(slug: string, formData: FormData) {
         title,
         content,
         url,
+        imageUrl: imageUrl || null,
         updatedAt: now
       })
       .where(eq(posts.url, slug))
