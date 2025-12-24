@@ -55,7 +55,7 @@ export default function PostItem({ post }: { post: Post }) {
         </Alert>
       )}
 
-      {session && (
+      {session && session.user?.id === post.UserId && (
         <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
           <Button
             variant="outlined"

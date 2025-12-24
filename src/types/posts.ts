@@ -5,5 +5,5 @@ export type Post = {
   content: string
   createdAt: string
   updatedAt: string
-  UserId: number | null
+  UserId: string | null
 }

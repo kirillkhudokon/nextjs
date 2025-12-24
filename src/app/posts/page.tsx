@@ -1,20 +1,31 @@
-import type { Post } from "@/types/posts";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, like, eq, and } from "drizzle-orm";
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
+import { PostsFilter } from './PostsFilter'
  
 export const dynamic = 'force-dynamic'
 
-export default async function Posts(){
-  const allPosts = db.select().from(posts).orderBy(desc(posts.createdAt)).all()
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
+
+export default async function Posts({ searchParams }: { searchParams: SearchParams }) {
+  const params = await searchParams
+  const search = params.search as string | undefined
+
+  const conditions = []
+  if (search) {
+    conditions.push(like(posts.title, `%${search}%`))
+  }
+
+  const allPosts = conditions.length > 0
+    ? db.select().from(posts).where(and(...conditions)).orderBy(desc(posts.createdAt)).all()
+    : db.select().from(posts).orderBy(desc(posts.createdAt)).all()
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -23,9 +34,11 @@ export default async function Posts(){
           Все посты
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Всего постов: {allPosts.length}
+          {search ? `Найдено постов: ${allPosts.length}` : `Всего постов: ${allPosts.length}`}
         </Typography>
       </Box>
+
+      <PostsFilter />
 
       {allPosts.length === 0 ? (
         <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -41,11 +54,14 @@ export default async function Posts(){
           </Button>
         </Box>
       ) : (
-        <Grid container spacing={3}>
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+          gap: 3 
+        }}>
           {allPosts.map(post => (
-            <Grid item xs={12} sm={6} md={4} key={post.id}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardContent sx={{ flexGrow: 1 }}>
+            <Card key={post.id} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ flexGrow: 1 }}>
                   <Typography variant="h5" component="h2" gutterBottom>
                     {post.title}
                   </Typography>
@@ -65,9 +81,8 @@ export default async function Posts(){
                   </Button>
                 </CardActions>
               </Card>
-            </Grid>
           ))}
-        </Grid>
+        </Box>
       )}
     </Container>
   );

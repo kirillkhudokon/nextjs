@@ -4,7 +4,6 @@ import { db } from '@/db'
 import { posts } from '@/db/schema'
 import { getServerAuthSession } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
 export async function createPost(formData: FormData) {
   const session = await getServerAuthSession()
@@ -22,7 +21,7 @@ export async function createPost(formData: FormData) {
       title,
       content,
       url,
-      UserId: session!.user.id as unknown as number, // не забудь пофиксить
+      UserId: session!.user.id,
       createdAt: now,
       updatedAt: now,
     }).returning().get()
