@@ -46,6 +46,21 @@ export default async function Post({ params } : PageProps<'/posts/[slug]'>){
           })}
         </Typography>
 
+        {post.imageUrl && (
+          <Box
+            component="img"
+            src={post.imageUrl}
+            alt={post.title}
+            sx={{
+              width: '100%',
+              maxHeight: 500,
+              objectFit: 'contain',
+              borderRadius: 2,
+              mb: 3
+            }}
+          />
+        )}
+
         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
           {post.content}
         </Typography>

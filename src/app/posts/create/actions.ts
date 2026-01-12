@@ -10,6 +10,7 @@ export async function createPost(formData: FormData) {
   const title = formData.get('title') as string
   const url = formData.get('url') as string
   const content = formData.get('content') as string
+  const imageUrl = formData.get('imageUrl') as string | null
 
   if (!title || !content || !url) {
     return { error: 'Title, content and url are required' }
@@ -21,6 +22,7 @@ export async function createPost(formData: FormData) {
       title,
       content,
       url,
+      imageUrl: imageUrl || null,
       UserId: session!.user.id,
       createdAt: now,
       updatedAt: now,
